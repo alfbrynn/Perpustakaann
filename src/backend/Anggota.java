@@ -36,6 +36,12 @@ public class Anggota {
     public String getNama() {
         return nama;
     }
+    
+    @Override
+     //    menambahkan nama anggota pada cmbAnggota di class buku
+    public String toString(){
+        return nama;
+    }
 
     public String getAlamat() {
         return alamat;

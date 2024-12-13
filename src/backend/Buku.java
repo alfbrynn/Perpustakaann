@@ -29,6 +29,12 @@ public class Buku {
     public String getJudul() {
         return judul;
     }
+    
+    @Override
+     //    menambahkan judul pada cmbJudul di class buku
+    public String toString(){
+        return judul;
+    }
 
     public String getPenerbit() {
         return penerbit;

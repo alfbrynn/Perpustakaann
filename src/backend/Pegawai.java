@@ -50,6 +50,12 @@ public class Pegawai {
         this.nama = nama;
     }
 
+    @Override
+     //    menambahkan nama pegawai pada cmbPegawai di class buku
+    public String toString(){
+        return nama;
+    }
+    
     public String getAlamat() {
         return alamat;
     }
