@@ -29,7 +29,6 @@ public class frmPeminjaman extends javax.swing.JFrame {
         tampilkanCmbBuku();
         tampilkanCmbPegawai();
         kosongkanForm();
-        
     }
     
     public void kosongkanForm() {
@@ -38,7 +37,7 @@ public class frmPeminjaman extends javax.swing.JFrame {
     cmbBuku.setSelectedIndex(0);
     cmbPegawai.setSelectedIndex(0);
     txtTanggalPinjam.setText(LocalDate.now().toString());
-    // txtTanggalKembali.setText("");
+    txtTanggalKembali.setText(LocalDate.now().toString());
     txtTanggalKembali.setEnabled(false); // Menonaktifkan kolom Tanggal Kembali saat form dibuka
 
 }
@@ -115,6 +114,7 @@ public void tampilkanCmbPegawai() {
         cmbAnggota = new javax.swing.JComboBox<>();
         cmbPegawai = new javax.swing.JComboBox<>();
         btnUpdate = new javax.swing.JButton();
+        btnTambah = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -204,6 +204,13 @@ public void tampilkanCmbPegawai() {
             }
         });
 
+        btnTambah.setText("Tambah");
+        btnTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTambahActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -216,7 +223,9 @@ public void tampilkanCmbPegawai() {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnSimpan)
-                                .addGap(121, 121, 121)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnTambah)
+                                .addGap(28, 28, 28)
                                 .addComponent(btnUpdate))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -279,7 +288,8 @@ public void tampilkanCmbPegawai() {
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnUpdate)
-                    .addComponent(btnSimpan))
+                    .addComponent(btnSimpan)
+                    .addComponent(btnTambah))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(9, Short.MAX_VALUE))
@@ -294,65 +304,67 @@ public void tampilkanCmbPegawai() {
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
-    LocalDate tanggalPinjam = parseDate(txtTanggalPinjam.getText());
-    LocalDate tanggalKembali = null; // Defaultkan null untuk tanggalKembali
-
-    // Periksa apakah tanggalPinjam valid
-    if (tanggalPinjam == null) {
-        return; // Jangan lanjutkan jika format tanggalPinjam salah
-    }
-
-    // Periksa apakah tanggalKembali valid
-    if (!txtTanggalKembali.getText().isEmpty()) {
-        tanggalKembali = parseDate(txtTanggalKembali.getText());
-        if (tanggalKembali == null) {
-            return; // Jangan lanjutkan jika format tanggalKembali salah
+        // Ambil tanggal pinjam
+        LocalDate tanggalPinjam = parseDate(txtTanggalPinjam.getText());
+        LocalDate tanggalKembali = parseDate(txtTanggalKembali.getText());
+        
+        // Validasi tanggal
+        if (tanggalKembali.isBefore(tanggalPinjam)) {
+            JOptionPane.showMessageDialog(this, "Tanggal kembali tidak boleh lebih awal dari tanggal pinjam.", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    }
 
-    // Proses menyimpan data
-    Peminjaman peminjaman = new Peminjaman();
-    peminjaman.setIdpeminjaman(Integer.parseInt(txtIdPeminjaman.getText()));
-    peminjaman.setAnggota((Anggota) cmbAnggota.getSelectedItem());
-    peminjaman.setBuku((Buku) cmbBuku.getSelectedItem());
-    peminjaman.setPegawai((Pegawai) cmbPegawai.getSelectedItem());
-    peminjaman.setTanggalPinjam(tanggalPinjam);
-    peminjaman.setTanggalKembali(tanggalKembali); // Jika tanggalKembali null, tetap simpan sebagai null
-    peminjaman.save();
-
-    tampilkanData();
-    kosongkanForm();
-    JOptionPane.showMessageDialog(this, "Data berhasil disimpan");
-
-    }//GEN-LAST:event_btnSimpanActionPerformed
-
-    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        // TODO add your handling code here:
-        // Ambil data dari form
-    int row = tblPeminjaman.getSelectedRow();
-    if (row != -1) {
-        // Get the selected peminjaman and update Tanggal Kembali
+        // Proses penyimpanan data
         Peminjaman peminjaman = new Peminjaman();
         peminjaman.setIdpeminjaman(Integer.parseInt(txtIdPeminjaman.getText()));
         peminjaman.setAnggota((Anggota) cmbAnggota.getSelectedItem());
         peminjaman.setBuku((Buku) cmbBuku.getSelectedItem());
         peminjaman.setPegawai((Pegawai) cmbPegawai.getSelectedItem());
-        peminjaman.setTanggalPinjam(parseDate(txtTanggalPinjam.getText()));
-        peminjaman.setTanggalKembali(parseDate(txtTanggalKembali.getText()));
+        peminjaman.setTanggalPinjam(tanggalPinjam);
+        peminjaman.setTanggalKembali(tanggalKembali); 
 
-        peminjaman.update();  // Assuming update method is implemented in the Peminjaman class
+        peminjaman.save();
+        
+        txtIdPeminjaman.setText(Integer.toString(peminjaman.getIdpeminjaman()));
 
-        // Disable row after update to indicate transaction is complete
-        tblPeminjaman.setEnabled(false);
-
-        // Refresh the table data
         tampilkanData();
-
-        // Reset form and disable Tanggal Kembali input
         kosongkanForm();
-        txtTanggalKembali.setEnabled(false);
+        JOptionPane.showMessageDialog(this, "Data berhasil disimpan.");
 
-        JOptionPane.showMessageDialog(this, "Data berhasil diupdate");
+    }//GEN-LAST:event_btnSimpanActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        // TODO add your handling code here:
+        int row = tblPeminjaman.getSelectedRow();
+
+    if (row != -1) {
+        // Ambil data dari form dan hanya perbarui tanggal kembali
+        Peminjaman peminjaman = new Peminjaman();
+        peminjaman.setIdpeminjaman(Integer.parseInt(txtIdPeminjaman.getText()));
+        peminjaman.setTanggalPinjam(parseDate(txtTanggalPinjam.getText())); // Tidak diubah
+        peminjaman.setTanggalKembali(LocalDate.parse(txtTanggalKembali.getText())); // Update tanggal kembali sesuai input
+
+        // Perbarui data di database
+        peminjaman.update();
+
+        // Nonaktifkan semua input setelah update
+        txtIdPeminjaman.setEnabled(false);
+        txtTanggalPinjam.setEnabled(false);
+        cmbAnggota.setEnabled(false);
+        cmbBuku.setEnabled(false);
+        cmbPegawai.setEnabled(false);
+        txtTanggalKembali.setEnabled(false); // Nonaktifkan setelah update
+
+        // Menandai baris di tabel agar tidak bisa diklik lagi
+        DefaultTableModel model = (DefaultTableModel) tblPeminjaman.getModel();
+        // Menandai baris yang telah diupdate sebagai tidak dapat dipilih
+        model.setValueAt("Updated", row, 0); // Menandai kolom pertama (misalnya ID) sebagai "Updated"
+
+        tampilkanData(); // Memperbarui tampilan tabel
+        kosongkanForm(); // Kosongkan form input setelah update
+        JOptionPane.showMessageDialog(this, "Tanggal kembali berhasil diperbarui.");
+    } else {
+        JOptionPane.showMessageDialog(this, "Pilih data yang ingin diupdate!");
     }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
@@ -366,20 +378,61 @@ public void tampilkanCmbPegawai() {
 
     private void tblPeminjamanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPeminjamanMouseClicked
         // TODO add your handling code here:
-        int row = tblPeminjaman.getSelectedRow();
-    if (row != -1) {
-        // Enable the Tanggal Kembali field for editing
-        txtTanggalKembali.setEnabled(true);
+        // TODO add your handling code here:
+    DefaultTableModel model = (DefaultTableModel) tblPeminjaman.getModel();
+    int row = tblPeminjaman.getSelectedRow();
 
-        // Get the selected peminjaman data
-        txtIdPeminjaman.setText(tblPeminjaman.getValueAt(row, 0).toString());
-        cmbAnggota.setSelectedItem(tblPeminjaman.getValueAt(row, 1).toString());
-        cmbBuku.setSelectedItem(tblPeminjaman.getValueAt(row, 2).toString());
-        cmbPegawai.setSelectedItem(tblPeminjaman.getValueAt(row, 3).toString());
-        txtTanggalPinjam.setText(tblPeminjaman.getValueAt(row, 4).toString());
-        txtTanggalKembali.setText(tblPeminjaman.getValueAt(row, 5).toString());
+    if (row != -1) { // Pastikan ada baris yang dipilih
+        try {
+            // Ambil ID peminjaman dari tabel
+            int idPeminjaman = Integer.parseInt(model.getValueAt(row, 0).toString());
+
+            // Ambil data peminjaman berdasarkan ID
+            Peminjaman peminjaman = new Peminjaman().getById(idPeminjaman);
+
+            if (peminjaman != null) {
+                // Set data ke form
+                txtIdPeminjaman.setText(String.valueOf(peminjaman.getIdpeminjaman()));
+
+                // Pastikan combo box dapat mengenali objek yang cocok
+                cmbAnggota.setSelectedItem(peminjaman.getAnggota());
+                cmbBuku.setSelectedItem(peminjaman.getBuku());
+                cmbPegawai.setSelectedItem(peminjaman.getPegawai());
+
+                // Format tanggal untuk ditampilkan di form
+                txtTanggalPinjam.setText(peminjaman.getTanggalPinjam().toString());
+                txtTanggalKembali.setText(peminjaman.getTanggalKembali() != null
+                        ? peminjaman.getTanggalKembali().toString()
+                        : ""); // Kosongkan jika tanggal kembali belum diatur
+                 
+                // Nonaktifkan semua field kecuali txtTanggalKembali
+                txtIdPeminjaman.setEnabled(false);
+                txtTanggalPinjam.setEnabled(false);
+                cmbAnggota.setEnabled(false);
+                cmbBuku.setEnabled(false);
+                cmbPegawai.setEnabled(false);
+                txtTanggalKembali.setEnabled(true); // Hanya tanggalKembali yang dapat diedit
+            } else {
+                JOptionPane.showMessageDialog(this, "Data peminjaman tidak ditemukan.", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Format ID peminjaman salah.", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage(), "Kesalahan", JOptionPane.ERROR_MESSAGE);
+        }
     }
     }//GEN-LAST:event_tblPeminjamanMouseClicked
+
+    private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
+        // TODO add your handling code here:
+        kosongkanForm();
+        txtIdPeminjaman.setEnabled(true);
+    txtTanggalPinjam.setEnabled(true);
+    cmbAnggota.setEnabled(true);
+    cmbBuku.setEnabled(true);
+    cmbPegawai.setEnabled(true);
+    txtTanggalKembali.setEnabled(false);
+    }//GEN-LAST:event_btnTambahActionPerformed
 
     /**
      * @param args the command line arguments
@@ -418,6 +471,7 @@ public void tampilkanCmbPegawai() {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSimpan;
+    private javax.swing.JButton btnTambah;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<String> cmbAnggota;
     private javax.swing.JComboBox<String> cmbBuku;

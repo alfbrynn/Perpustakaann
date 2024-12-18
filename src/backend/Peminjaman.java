@@ -6,6 +6,7 @@ package backend;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Peminjaman {
@@ -85,7 +86,7 @@ public class Peminjaman {
             + " p.tanggalpinjam AS tanggalpinjam, "
             + " p.tanggalkembali AS tanggalkembali, "
             + " a.idanggota AS idanggota, "
-            + " a.nama AS namaangota, "
+            + " a.nama AS nama, "
             + " a.alamat AS alamat, "
             + " a.telepon AS telepon, "
             + " b.idbuku AS idbuku, "
@@ -106,13 +107,17 @@ public class Peminjaman {
         if (rs.next()) {
             // Set data ke objek peminjaman
             peminjaman.setIdpeminjaman(rs.getInt("idpeminjaman"));
-            peminjaman.setTanggalPinjam(rs.getDate("tanggalpinjam").toLocalDate());
-            peminjaman.setTanggalKembali(rs.getDate("tanggalkembali").toLocalDate());
-
+            // Convert tanggalPinjam dan tanggalKembali ke LocalDate
+            LocalDate tanggalPinjam = rs.getDate("tanggalpinjam").toLocalDate();
+            LocalDate tanggalKembali = rs.getDate("tanggalkembali").toLocalDate();
+            
+            peminjaman.setTanggalPinjam(tanggalPinjam);
+            peminjaman.setTanggalKembali(tanggalKembali);
+            
             // Set data anggota
             Anggota anggota = new Anggota();
             anggota.setIdanggota(rs.getInt("idanggota"));
-            anggota.setNama(rs.getString("namaanggota"));
+            anggota.setNama(rs.getString("nama"));
             anggota.setAlamat(rs.getString("alamat"));
             anggota.setTelepon(rs.getString("telepon"));
             peminjaman.setAnggota(anggota);
@@ -131,6 +136,7 @@ public class Peminjaman {
             pegawai.setNama(rs.getString("namapegawai"));
             peminjaman.setPegawai(pegawai);
         }
+
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -145,7 +151,7 @@ public class Peminjaman {
             + " p.tanggalpinjam AS tanggalpinjam, "
             + " p.tanggalkembali AS tanggalkembali, "
             + " a.idanggota AS idanggota, "
-            + " a.nama AS namaanggota, "
+            + " a.nama AS nama, "
             + " a.alamat AS alamat, "
             + " a.telepon AS telepon, "
             + " b.idbuku AS idbuku, "
@@ -166,13 +172,17 @@ public class Peminjaman {
             // Buat objek peminjaman
             Peminjaman peminjaman = new Peminjaman();
             peminjaman.setIdpeminjaman(rs.getInt("idpeminjaman"));
-            peminjaman.setTanggalPinjam(rs.getDate("tanggalpinjam").toLocalDate());
-            peminjaman.setTanggalKembali(rs.getDate("tanggalkembali").toLocalDate());
+            // Convert tanggalPinjam dan tanggalKembali ke LocalDate
+            LocalDate tanggalPinjam = rs.getDate("tanggalpinjam").toLocalDate();
+            LocalDate tanggalKembali = rs.getDate("tanggalkembali").toLocalDate();
+            
+            peminjaman.setTanggalPinjam(tanggalPinjam);
+            peminjaman.setTanggalKembali(tanggalKembali);
 
             // Set data anggota
             Anggota anggota = new Anggota();
             anggota.setIdanggota(rs.getInt("idanggota"));
-            anggota.setNama(rs.getString("namaanggota"));
+            anggota.setNama(rs.getString("nama"));
             anggota.setAlamat(rs.getString("alamat"));
             anggota.setTelepon(rs.getString("telepon"));
             peminjaman.setAnggota(anggota);
@@ -194,6 +204,7 @@ public class Peminjaman {
             // Tambahkan ke list
             listPeminjaman.add(peminjaman);
         }
+
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -201,67 +212,51 @@ public class Peminjaman {
 }
 
 
-    public ArrayList<Peminjaman> search(String keyword) {
-        ArrayList<Peminjaman> listPeminjaman = new ArrayList<>();
-        ResultSet rs = DBHelper.selectQuery("SELECT * FROM peminjaman WHERE idpeminjaman LIKE '%" + keyword + "%' " +
-            "OR idanggota LIKE '%" + keyword + "%' " +
-            "OR idbuku LIKE '%" + keyword + "%'");
-
-        try {
-            while (rs.next()) {
-                Peminjaman peminjaman = new Peminjaman();
-                peminjaman.setIdpeminjaman(rs.getInt("idpeminjaman"));
-                peminjaman.getAnggota().setIdanggota(rs.getInt("idanggota"));
-                peminjaman.getBuku().setIdbuku(rs.getInt("idbuku"));
-                peminjaman.getPegawai().setIdPegawai(rs.getInt("idpegawai"));
-                peminjaman.setTanggalPinjam(rs.getDate("tanggalPinjam").toLocalDate());
-                peminjaman.setTanggalKembali(rs.getDate("tanggalKembali").toLocalDate());
-                listPeminjaman.add(peminjaman);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return listPeminjaman;
-    }
-
     public void save() {
-        if (getById(idpeminjaman).getIdpeminjaman() == 0) {
-            String SQL = "INSERT INTO peminjaman (idanggota, idbuku, idpegawai, tanggalPinjam, tanggalKembali) VALUES ("
-                + this.getAnggota().getIdanggota() + ", "
-                + this.getBuku().getIdbuku() + ", "
-                + this.getPegawai().getIdPegawai() + ", '"
-                + this.tanggalPinjam + "', '"
-                + this.tanggalKembali + "')";
-            this.idpeminjaman = DBHelper.insertQueryGetId(SQL);
-        } else {
-            String SQL = "UPDATE peminjaman SET "
-                + "idanggota = " + this.getAnggota().getIdanggota() + ", "
-                + "idbuku = " + this.getBuku().getIdbuku() + ", "
-                + "idpegawai = " + this.getPegawai().getIdPegawai() + ", "
-                + "tanggalPinjam = '" + this.tanggalPinjam + "', "
-                + "tanggalKembali = '" + this.tanggalKembali + "' "
-                + "WHERE idpeminjaman = " + this.idpeminjaman;
-            DBHelper.executeQuery(SQL);
-        }
+    // Format untuk LocalDate menjadi string (yyyy-MM-dd)
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String formattedTanggalPinjam = this.tanggalPinjam.format(formatter);
+    String formattedTanggalKembali = this.tanggalKembali.format(formatter);
+
+    if (getById(idpeminjaman).getIdpeminjaman() == 0) {
+        String SQL = "INSERT INTO peminjaman (idanggota, idbuku, idpegawai, tanggalPinjam, tanggalKembali) VALUES ("
+            + this.getAnggota().getIdanggota() + ", "
+            + this.getBuku().getIdbuku() + ", "
+            + this.getPegawai().getIdPegawai() + ", '"
+            + formattedTanggalPinjam + "', '"
+            + formattedTanggalKembali + "')";
+        this.idpeminjaman = DBHelper.insertQueryGetId(SQL);
+    } else {
+        String SQL = "UPDATE peminjaman SET "
+            + "idanggota = " + this.getAnggota().getIdanggota() + ", "
+            + "idbuku = " + this.getBuku().getIdbuku() + ", "
+            + "idpegawai = " + this.getPegawai().getIdPegawai() + ", "
+            + "tanggalPinjam = '" + formattedTanggalPinjam + "', "
+            + "tanggalKembali = '" + formattedTanggalKembali + "' "
+            + "WHERE idpeminjaman = " + this.idpeminjaman;
+        DBHelper.executeQuery(SQL);
     }
+}
     
     public void update() {
     // Pastikan idpeminjaman sudah ada
     if (getById(idpeminjaman).getIdpeminjaman() != 0) {
+        // Format untuk LocalDate menjadi string (yyyy-MM-dd) hanya untuk tanggalKembali
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedTanggalKembali = this.tanggalKembali.format(formatter);
+
+        // SQL query hanya mengupdate tanggalKembali
         String SQL = "UPDATE peminjaman SET "
-                + "idanggota = " + this.getAnggota().getIdanggota() + ", "
-                + "idbuku = " + this.getBuku().getIdbuku() + ", "
-                + "idpegawai = " + this.getPegawai().getIdPegawai() + ", "
-                + "tanggalPinjam = '" + this.tanggalPinjam + "', "
-                + "tanggalKembali = '" + this.tanggalKembali + "' "
+                + "tanggalKembali = '" + formattedTanggalKembali + "' "
                 + "WHERE idpeminjaman = " + this.idpeminjaman;
 
-        // Menjalankan query untuk mengupdate data peminjaman
+        // Menjalankan query untuk mengupdate tanggal kembali
         DBHelper.executeQuery(SQL);
     } else {
         System.out.println("Peminjaman dengan ID " + idpeminjaman + " tidak ditemukan.");
     }
 }
+
 
 }
 

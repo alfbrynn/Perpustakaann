@@ -4,12 +4,19 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/backend/DBHelper.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/frmPegawai.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/backend/Pegawai.java</file>
             <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/backend/Kategori.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/backend/Buku.java</file>
             <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/TestBackend.java</file>
             <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/frmKategori.java</file>
             <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/perpustakaann/Perpustakaann.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/backend/Peminjaman.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/frmBuku.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/TestBuku.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/frmPeminjaman.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/frmPegawai.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/backend/Pegawai.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/backend/Anggota.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Perpustakaann/src/frontend/frmAnggota.java</file>
         </group>
     </open-files>
 </project-private>
